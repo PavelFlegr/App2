@@ -13,9 +13,10 @@ namespace App2
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class Map : ContentPage
     {
-        Circle EditingCircle { get; set; }
+        LocationVM currentLoc { get; set; }
         public Map()
         {
+            
             InitializeComponent();
             map.IsShowingUser = true;
             // Map Clicked
@@ -23,23 +24,62 @@ namespace App2
             {
                 var lat = e.Point.Latitude.ToString("0.000");
                 var lng = e.Point.Longitude.ToString("0.000");
-                map.Pins.Add(MakePin(lat, lng));
+                CreateLocation(double.Parse(lat), double.Parse(lng));
+                map.Circles.Add(currentLoc.MapCircle);
+                map.Pins.Add(currentLoc.MapPin);
+                ToggleSettings();
             };
         }
 
-        Pin MakePin(string lat, string lng)
+        void CreateLocation(double lat, double lng)
         {
-            var pin = new Pin();
-            var pos = new Position(double.Parse(lat), double.Parse(lng));
-            pin.Position = pos;
-            pin.Label = "new location";
-            map.Circles.Add(new Circle { Center = pos, Radius = new Distance(1000), FillColor = Color.Transparent, StrokeColor = Color.LightBlue });
-            return pin;
+            var location = new Location
+            {
+                Coords = new Position(lat, lng)
+            };
+
+            currentLoc = new LocationVM(location);
+            
         }
 
         private void Slider_ValueChanged(object sender, ValueChangedEventArgs e)
         {
-            EditingCircle.Radius = new Distance(e.NewValue);
+            if (currentLoc != null) {
+                currentLoc.MapCircle.Radius = new Distance(e.NewValue);
+            }
         }
+
+        void ToggleSettings()
+        {
+            if(currentLoc == null)
+            {
+                settings.IsVisible = false;
+            }
+            else
+            {
+                settings.IsVisible = true;
+            }
+        }
+
+        private void CancelButton_Clicked(object sender, EventArgs e)
+        {
+            map.Pins.Remove(currentLoc.MapPin);
+            map.Circles.Remove(currentLoc.MapCircle);
+            currentLoc = null;
+            ToggleSettings();
+        }
+
+        private void SaveButton_Clicked(object sender, EventArgs e)
+        {
+            map.Circles.Remove(currentLoc.MapCircle);
+            currentLoc.MapPin.Clicked += (o, ev) =>
+            {
+
+            };
+            currentLoc = null;
+
+            ToggleSettings();
+        }
+
     }
 }

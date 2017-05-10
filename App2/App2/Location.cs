@@ -11,7 +11,7 @@ namespace App2
     class Location : INotifyPropertyChanged
     {
         public string Title { get; set; }
-        public Location Coords { get; set; }
+        public Position Coords { get; set; }
         public int Radius { get; set; }
         public string Description { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
