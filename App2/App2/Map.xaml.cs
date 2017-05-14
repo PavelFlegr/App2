@@ -13,11 +13,13 @@ namespace App2
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class Map : ContentPage
     {
-        LocationVM currentLoc { get; set; }
+        Dictionary<Pin, Location> pins = new Dictionary<Pin, Location>();
+        LocationVM currentLoc;
+        LocationVM lastLoc;
         public Map()
         {
-            
             InitializeComponent();
+            map.PinClicked += Map_PinClicked;
             map.IsShowingUser = true;
             // Map Clicked
             map.MapClicked += (sender, e) =>
@@ -39,7 +41,7 @@ namespace App2
             };
 
             currentLoc = new LocationVM(location);
-            
+
         }
 
         private void Slider_ValueChanged(object sender, ValueChangedEventArgs e)
@@ -63,7 +65,11 @@ namespace App2
 
         private void CancelButton_Clicked(object sender, EventArgs e)
         {
-            map.Pins.Remove(currentLoc.MapPin);
+            if (!pins.ContainsKey(currentLoc.MapPin))
+            {
+                
+                map.Pins.Remove(currentLoc.MapPin);
+            }
             map.Circles.Remove(currentLoc.MapCircle);
             currentLoc = null;
             ToggleSettings();
@@ -72,14 +78,17 @@ namespace App2
         private void SaveButton_Clicked(object sender, EventArgs e)
         {
             map.Circles.Remove(currentLoc.MapCircle);
-            currentLoc.MapPin.Clicked += (o, ev) =>
-            {
-
-            };
+            pins[currentLoc.MapPin] = currentLoc.Loc;
+            currentLoc.Loc.Radius = (int)currentLoc.MapCircle.Radius.Meters;
             currentLoc = null;
-
             ToggleSettings();
         }
 
+        private void Map_PinClicked(object sender, PinClickedEventArgs e)
+        {
+            currentLoc = new LocationVM(pins[e.Pin].ShallowCopy());
+            map.Circles.Add(currentLoc.MapCircle);
+            ToggleSettings();
+        }
     }
 }

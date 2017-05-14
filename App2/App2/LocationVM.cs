@@ -18,7 +18,7 @@ namespace App2
         {
             Loc = loc;
             MapPin = new Pin { Label = "new location", Position = new Xamarin.Forms.GoogleMaps.Position(loc.Coords.Latitude, loc.Coords.Longitude) };
-            MapCircle = new Circle { Center = new Xamarin.Forms.GoogleMaps.Position(loc.Coords.Latitude, loc.Coords.Longitude), FillColor = Color.Transparent, StrokeColor = Color.LightBlue, StrokeWidth = 3 };
+            MapCircle = new Circle { Center = new Xamarin.Forms.GoogleMaps.Position(loc.Coords.Latitude, loc.Coords.Longitude), FillColor = Color.Transparent, StrokeColor = Color.LightBlue, StrokeWidth = 3, Radius = new Distance(Loc.Radius) };
         }
     }
 }

@@ -15,5 +15,15 @@ namespace App2
         public int Radius { get; set; }
         public string Description { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public Location()
+        {
+            Radius = 100;
+        }
+
+        public Location ShallowCopy()
+        {
+            return new Location { Coords = Coords, Description = Description, Radius = Radius, Title = Title };
+        }
     }
 }
