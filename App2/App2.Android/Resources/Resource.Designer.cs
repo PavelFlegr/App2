@@ -9,9 +9,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::Android.Runtime.ResourceDesignerAttribute("App2.Droid.Resource", IsApplication=true)]
+[assembly: global::Android.Runtime.ResourceDesignerAttribute("App2.Android.Resource", IsApplication=true)]
 
-namespace App2.Droid
+namespace App2.Android
 {
 	
 	
@@ -26,7 +26,9 @@ namespace App2.Droid
 		
 		public static void UpdateIdValues()
 		{
-			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::App2.Droid.Resource.Attribute.actionBarSize;
+			global::PCLStorage.Resource.String.ApplicationName = global::App2.Android.Resource.String.ApplicationName;
+			global::PCLStorage.Resource.String.Hello = global::App2.Android.Resource.String.Hello;
+			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::App2.Android.Resource.Attribute.actionBarSize;
 		}
 		
 		public partial class Animation
@@ -3230,6 +3232,12 @@ namespace App2.Droid
 		
 		public partial class String
 		{
+			
+			// aapt resource value: 0x7f060046
+			public const int ApplicationName = 2131099718;
+			
+			// aapt resource value: 0x7f060045
+			public const int Hello = 2131099717;
 			
 			// aapt resource value: 0x7f06002e
 			public const int abc_action_bar_home_description = 2131099694;

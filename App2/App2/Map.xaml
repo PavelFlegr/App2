@@ -17,7 +17,7 @@
             </Grid.RowDefinitions>
             <Entry WidthRequest="200" HorizontalOptions="Center" Grid.ColumnSpan="2" Grid.Row="0" Placeholder="Title" Text="{Binding Title, Mode=OneWayToSource}"></Entry>
             <Label Grid.Column="0" Grid.Row="1">Radius</Label>
-            <Slider Grid.Column="1" Grid.Row="1" Minimum="0" Maximum="10000" Value="{Binding Radius}" ValueChanged="Slider_ValueChanged"></Slider>
+            <Slider x:Name="slider" Grid.Column="1" Grid.Row="1" Minimum="0" Maximum="10000" Value="{Binding Radius}" ValueChanged="Slider_ValueChanged"></Slider>
             <Button Text="Cancel" Grid.Row="2" Clicked="CancelButton_Clicked"></Button>
             <Button Text="Save" Grid.Row="2" Grid.Column="1" HorizontalOptions="End" Clicked="SaveButton_Clicked"></Button>
         </Grid>
