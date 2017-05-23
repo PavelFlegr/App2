@@ -39,6 +39,8 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Location.cs" />
+    <Compile Include="LocationDB.cs" />
+    <Compile Include="LocationListItemVM.cs" />
     <Compile Include="LocationVM.cs" />
     <Compile Include="Map.xaml.cs">
       <DependentUpon>Map.xaml</DependentUpon>

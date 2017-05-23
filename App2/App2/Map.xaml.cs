@@ -16,7 +16,6 @@ namespace App2
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class Map : ContentPage
     {
-        SQLiteConnection conn;
         Dictionary<Pin, Location> pins = new Dictionary<Pin, Location>();
         LocationVM currentLoc
         {
@@ -33,10 +32,8 @@ namespace App2
 
         public Map()
         {
-            conn = new SQLiteConnection(FileSystem.Current.LocalStorage.Path + "/db");
             InitializeComponent();
             locator = CrossGeolocator.Current;
-            conn.CreateTable<Location>();
             //conn.DeleteAll<Location>();
             LoadLocations();
             Init();
@@ -73,8 +70,7 @@ namespace App2
 
         void LoadLocations()
         {
-            var locationss = conn.Table<Location>();
-            var locations = locationss.ToList();
+            var locations = LocationDB.GetLocationList();
             foreach (var location in locations)
             {
                 var locVM = new LocationVM(location);
@@ -134,7 +130,7 @@ namespace App2
         {
             map.Circles.Remove(currentLoc.MapCircle);
             pins[currentLoc.MapPin] = currentLoc.Loc;
-            SaveLocationToDB(currentLoc.Loc);
+            LocationDB.SaveItem(currentLoc.Loc);
             currentLoc.Loc.Radius = (int)currentLoc.MapCircle.Radius.Meters;
             currentLoc = null;
             ToggleSettings();
@@ -148,21 +144,9 @@ namespace App2
             ToggleSettings();
         }
 
-        async Task SaveLocationToDB(Location location)
-        {
-            if(location.Id == 0)
-            {
-                conn.Insert(location);
-            }
-            else
-            {
-                conn.Update(location);
-            }
-        }
-
         private void MyLocations_Clicked(object sender, EventArgs e)
         {
-            Navigation.InsertPageBefore(new MyLocations(), Navigation.NavigationStack[0]);
+            Navigation.InsertPageBefore(new MyLocations(), this);
             Navigation.PopAsync();
         }
 

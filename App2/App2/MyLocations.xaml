@@ -6,8 +6,9 @@
         <ListView.ItemTemplate>
             <DataTemplate>
                 <ViewCell>
-                    <StackLayout>
-                        <Label Text="{Binding Title}"></Label>
+                    <StackLayout Orientation="Horizontal">
+                        <Label Text="{Binding location.Title}"></Label>
+                        <Button Command="{Binding DeleteCommand}" Text="Delete"></Button>
                     </StackLayout>
                 </ViewCell>
             </DataTemplate>

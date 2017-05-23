@@ -3,33 +3,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-using SQLite;
-using PCLStorage;
 
 namespace App2
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MyLocations : ContentPage
     {
-        SQLiteConnection conn;
         public MyLocations()
         {
-            conn = new SQLiteConnection(FileSystem.Current.LocalStorage.Path + "/db");
+            
             InitializeComponent();
             LoadLocations();
         }
 
         void LoadLocations()
         {
-            Helloo.ItemsSource = conn.Table<Location>().ToList();
+            var locList = new ObservableCollection<LocationListItemVM>();
+            foreach(Location loc in LocationDB.GetLocationList())
+            {
+                LocationListItemVM locVM = new LocationListItemVM(loc);
+                locList.Add(locVM);
+                locVM.Removed += (o, e) => locList.Remove(locVM);
+            }
+            Helloo.ItemsSource = locList;
         }
 
         private void Map_Clicked(object sender, EventArgs e)
         {
-            Navigation.InsertPageBefore(new Map(), Navigation.NavigationStack[0]);
+            Navigation.InsertPageBefore(new Map(), this);
             Navigation.PopAsync();
         }
     }

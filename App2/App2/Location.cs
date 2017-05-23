@@ -14,6 +14,8 @@ namespace App2
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
         public string Title { get; set; }
+
+        //sqlite-net workaround - Coords for the app; lat, lon for sqlite
         [Ignore]
         public Position Coords
         {
@@ -29,8 +31,12 @@ namespace App2
         }
         public double lat { get; set; }
         public double lon { get; set; }
+
+        
         public double Radius { get; set; }
         public string Description { get; set; }
+
+
         public bool Active { get; set; } = true;
         public event PropertyChangedEventHandler PropertyChanged;
 
