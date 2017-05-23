@@ -16,16 +16,29 @@ namespace App2
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class Map : ContentPage
     {
-        SQLiteAsyncConnection conn;
+        SQLiteConnection conn;
         Dictionary<Pin, Location> pins = new Dictionary<Pin, Location>();
-        LocationVM currentLoc;
+        LocationVM currentLoc
+        {
+            get
+            {
+                return (LocationVM)BindingContext;
+            }
+            set
+            {
+                BindingContext = value;
+            }
+        }
         Plugin.Geolocator.Abstractions.IGeolocator locator;
 
         public Map()
         {
-            conn = new SQLiteAsyncConnection(FileSystem.Current.LocalStorage.Path + "/db");
+            conn = new SQLiteConnection(FileSystem.Current.LocalStorage.Path + "/db");
             InitializeComponent();
             locator = CrossGeolocator.Current;
+            conn.CreateTable<Location>();
+            //conn.DeleteAll<Location>();
+            LoadLocations();
             Init();
 
             map.PinClicked += Map_PinClicked;
@@ -45,8 +58,7 @@ namespace App2
 
         async Task Init()
         {
-            var t2 = LoadLocations();
-            var t = conn.CreateTableAsync<Location>();
+
             try
             {
                 var pos = await locator.GetPositionAsync();
@@ -56,15 +68,17 @@ namespace App2
             {
                 throw (e);
             }
-            await t2;
+            
         }
 
-        async Task LoadLocations()
+        void LoadLocations()
         {
-            var locations = await conn.Table<Location>().ToListAsync();
-            foreach(var location in locations)
+            var locationss = conn.Table<Location>();
+            var locations = locationss.ToList();
+            foreach (var location in locations)
             {
                 var locVM = new LocationVM(location);
+                pins.Add(locVM.MapPin, location);
                 map.Pins.Add(locVM.MapPin);
             }
         }
@@ -83,7 +97,7 @@ namespace App2
         private void Slider_ValueChanged(object sender, ValueChangedEventArgs e)
         {
             if (currentLoc != null) {
-                currentLoc.MapCircle.Radius = new Distance(e.NewValue);
+                currentLoc.MapCircle.Radius = new Distance(currentLoc.Loc.Radius);
             }
         }
 
@@ -138,12 +152,23 @@ namespace App2
         {
             if(location.Id == 0)
             {
-                await conn.InsertAsync(location);
+                conn.Insert(location);
             }
             else
             {
-                await conn.UpdateAsync(location);
+                conn.Update(location);
             }
+        }
+
+        private void MyLocations_Clicked(object sender, EventArgs e)
+        {
+            Navigation.InsertPageBefore(new MyLocations(), Navigation.NavigationStack[0]);
+            Navigation.PopAsync();
+        }
+
+        private void title_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            currentLoc.MapPin.Label = e.NewTextValue;
         }
     }
 }
