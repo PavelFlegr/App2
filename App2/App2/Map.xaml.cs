@@ -33,10 +33,9 @@ namespace App2
         public Map()
         {
             InitializeComponent();
-            locator = CrossGeolocator.Current;
             //conn.DeleteAll<Location>();
             LoadLocations();
-            Init();
+            InitAsync();
 
             map.PinClicked += Map_PinClicked;
             map.IsShowingUser = true;
@@ -53,9 +52,17 @@ namespace App2
             };
         }
 
-        async Task Init()
+        public Map(Location loc) : this()
         {
+            MyPinClicked(pins.Where((pair) => pair.Value.Id == loc.Id).First().Key);
+            ToggleSettings();
+        }
 
+        //this needs to be asynchronous because awaititng in the main thread causes a deadlock
+        //sets the camera on user position if available
+        async Task InitAsync()
+        {
+            locator = CrossGeolocator.Current;
             try
             {
                 var pos = await locator.GetPositionAsync();
@@ -65,9 +72,10 @@ namespace App2
             {
                 throw (e);
             }
-            
+
         }
 
+        //populates map with saved locations and their pins
         void LoadLocations()
         {
             var locations = LocationDB.GetLocationList();
@@ -97,6 +105,7 @@ namespace App2
             }
         }
 
+        //hides or shows settings depending on whether they have something to display 
         void ToggleSettings()
         {
             map.InitialCameraUpdate = CameraUpdateFactory.NewCameraPosition(map.CameraPosition);
@@ -130,6 +139,9 @@ namespace App2
         {
             map.Circles.Remove(currentLoc.MapCircle);
             pins[currentLoc.MapPin] = currentLoc.Loc;
+            currentLoc.Loc.Title = title.Text;
+            currentLoc.MapPin.Label = title.Text;
+            currentLoc.Loc.Description = description.Text;
             LocationDB.SaveItem(currentLoc.Loc);
             currentLoc.Loc.Radius = (int)currentLoc.MapCircle.Radius.Meters;
             currentLoc = null;
@@ -138,8 +150,15 @@ namespace App2
 
         private void Map_PinClicked(object sender, PinClickedEventArgs e)
         {
+            MyPinClicked(e.Pin);
+        }
+
+        void MyPinClicked(Pin pin)
+        {
             CancelButton_Clicked(null, EventArgs.Empty);
-            currentLoc = new LocationVM(pins[e.Pin].ShallowCopy());
+            currentLoc = new LocationVM(pins[pin].ShallowCopy());
+            title.Text = currentLoc.Loc.Title;
+            description.Text = currentLoc.Loc.Description;
             map.Circles.Add(currentLoc.MapCircle);
             ToggleSettings();
         }

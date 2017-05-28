@@ -8,7 +8,7 @@ using PCLStorage;
 
 namespace App2
 {
-    static class LocationDB
+    public static class LocationDB
     {
         static SQLiteConnection conn;
 

@@ -29,12 +29,18 @@ namespace App2
                 locList.Add(locVM);
                 locVM.Removed += (o, e) => locList.Remove(locVM);
             }
-            Helloo.ItemsSource = locList;
+            locations.ItemsSource = locList;
         }
 
         private void Map_Clicked(object sender, EventArgs e)
         {
             Navigation.InsertPageBefore(new Map(), this);
+            Navigation.PopAsync();
+        }
+
+        private void locations_ItemTapped(object sender, ItemTappedEventArgs e)
+        {
+            Navigation.InsertPageBefore(new Map(((LocationListItemVM)e.Item).location), this);
             Navigation.PopAsync();
         }
     }

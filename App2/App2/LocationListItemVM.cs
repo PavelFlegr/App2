@@ -11,6 +11,18 @@ namespace App2
     {
         public Location location { get; set; }
         public Command DeleteCommand { get; set; }
+        public bool Active
+        {
+            get
+            {
+                return location.Active;
+            }
+            set
+            {
+                location.Active = value;
+                LocationDB.SaveItem(location);
+            }
+        }
         public LocationListItemVM(Location location)
         {
             this.location = location;

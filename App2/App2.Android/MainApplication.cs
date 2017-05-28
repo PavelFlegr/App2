@@ -5,6 +5,8 @@ using Android.OS;
 using Android.Runtime;
 using Plugin.CurrentActivity;
 using Android.Content;
+using Android.Content.PM;
+using System.Reflection;
 
 namespace App2.Android
 {
@@ -22,11 +24,10 @@ namespace App2.Android
             base.OnCreate();
             RegisterActivityLifecycleCallbacks(this);
             var am = (AlarmManager)Context.GetSystemService(AlarmService);
-            am.SetInexactRepeating(AlarmType.ElapsedRealtimeWakeup, SystemClock.ElapsedRealtime(), 60000, PendingIntent.GetBroadcast(Context, 0, new Intent(Context, Class), 0));
+            am.SetRepeating(AlarmType.ElapsedRealtimeWakeup, SystemClock.ElapsedRealtime(), 1000 * 10, PendingIntent.GetBroadcast(Context, 0, new Intent(Context, new AlarmReciever().Class), 0));
             //A great place to initialize Xamarin.Insights and Dependency Services!
         }
 
-        public void On
 
         public override void OnTerminate()
         {

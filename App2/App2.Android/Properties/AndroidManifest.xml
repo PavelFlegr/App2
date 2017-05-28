@@ -8,6 +8,7 @@
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 	<application android:label="App2.Android">
 		<meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyBy_UN8ziJZVjDTR2MAfU4NqBKV6BKjf2E" />
 	</application>

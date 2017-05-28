@@ -18,7 +18,7 @@ namespace App2.Android
             ToolbarResource = Resource.Layout.Toolbar;
             
             base.OnCreate(bundle);
-
+ 
             global::Xamarin.Forms.Forms.Init(this, bundle);
             Xamarin.FormsGoogleMaps.Init(this, bundle);
             LoadApplication(new App());

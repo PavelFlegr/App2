@@ -28,6 +28,7 @@ namespace App2.Android
 		{
 			global::PCLStorage.Resource.String.ApplicationName = global::App2.Android.Resource.String.ApplicationName;
 			global::PCLStorage.Resource.String.Hello = global::App2.Android.Resource.String.Hello;
+			global::Plugin.LocalNotifications.Resource.Drawable.plugin_lc_smallicon = global::App2.Android.Resource.Drawable.plugin_lc_smallicon;
 			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::App2.Android.Resource.Attribute.actionBarSize;
 		}
 		
@@ -2460,8 +2461,11 @@ namespace App2.Android
 			// aapt resource value: 0x7f0200ca
 			public const int mr_ic_play_light = 2130837706;
 			
+			// aapt resource value: 0x7f0200cc
+			public const int notification_template_icon_bg = 2130837708;
+			
 			// aapt resource value: 0x7f0200cb
-			public const int notification_template_icon_bg = 2130837707;
+			public const int plugin_lc_smallicon = 2130837707;
 			
 			static Drawable()
 			{

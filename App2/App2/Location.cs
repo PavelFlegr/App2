@@ -9,11 +9,12 @@ using SQLite;
 
 namespace App2
 {
-    class Location : INotifyPropertyChanged
+    public class Location
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
         public string Title { get; set; }
+        public bool Timeout { get; set; }
 
         //sqlite-net workaround - Coords for the app; lat, lon for sqlite
         [Ignore]
@@ -37,17 +38,17 @@ namespace App2
         public string Description { get; set; }
 
 
-        public bool Active { get; set; } = true;
-        public event PropertyChangedEventHandler PropertyChanged;
+        public bool Active { get; set; }
 
         public Location()
         {
+            Active = true;
             Radius = 100;
         }
 
         public Location ShallowCopy()
         {
-            return new Location { Id = Id, Coords = Coords, Description = Description, Radius = Radius, Title = Title };
+            return new Location { Id = Id, Coords = Coords, Description = Description, Radius = Radius, Title = Title, Active = Active };
         }
     }
 }
