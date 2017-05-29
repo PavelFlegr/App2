@@ -63,14 +63,15 @@ namespace App2
         async Task InitAsync()
         {
             locator = CrossGeolocator.Current;
+            
             try
             {
                 var pos = await locator.GetPositionAsync();
                 await map.MoveCamera(CameraUpdateFactory.NewPosition(new Xamarin.Forms.GoogleMaps.Position(pos.Latitude, pos.Longitude)));
             }
-            catch (Exception e)
+            catch
             {
-                throw (e);
+                
             }
 
         }
@@ -138,10 +139,10 @@ namespace App2
         private void SaveButton_Clicked(object sender, EventArgs e)
         {
             map.Circles.Remove(currentLoc.MapCircle);
-            pins[currentLoc.MapPin] = currentLoc.Loc;
             currentLoc.Loc.Title = title.Text;
             currentLoc.MapPin.Label = title.Text;
             currentLoc.Loc.Description = description.Text;
+            pins[currentLoc.MapPin] = currentLoc.Loc;
             LocationDB.SaveItem(currentLoc.Loc);
             currentLoc.Loc.Radius = (int)currentLoc.MapCircle.Radius.Meters;
             currentLoc = null;

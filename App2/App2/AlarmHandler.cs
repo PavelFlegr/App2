@@ -24,30 +24,45 @@ namespace App2
 
         static async Task CheckNearbyLocation()
         {
-            var position = GetPosition();
-            var locations = LocationDB.GetLocationList();
-            foreach (Location location in locations)
+            try
             {
-                double distance = DistanceCalculator.Distance(location.Coords, await position);
-                if (location.Timeout && distance > location.Radius + 10)
+                var position = GetPosition();
+                var locations = LocationDB.GetLocationList();
+                foreach (Location location in locations)
                 {
-                    location.Timeout = false;
-                }
-                if (location.Active && !location.Timeout && distance < location.Radius)
-                {
-                    NotifyNearby(location);
-                    location.Timeout = true;
-                }
+                    double distance = DistanceCalculator.Distance(location.Coords, await position);
+                    if (location.Timeout && distance > location.Radius + 10)
+                    {
+                        location.Timeout = false;
+                    }
+                    if (location.Active && !location.Timeout && distance < location.Radius)
+                    {
+                        NotifyNearby(location);
+                        location.Timeout = true;
+                    }
 
-                LocationDB.SaveItem(location);
+                    LocationDB.SaveItem(location);
+                }
             }
+            catch
+            {
+                return;
+            }
+            
         }
 
         static async Task<Position> GetPosition()
         {
             var locator = CrossGeolocator.Current;
-            var pos = await locator.GetPositionAsync();
-            return new Position(pos.Latitude, pos.Longitude);
+            try
+            {
+                var pos = await locator.GetPositionAsync();
+                return new Position(pos.Latitude, pos.Longitude);
+            }
+            catch(Exception e)
+            {
+                throw e;
+            }
         }
 
         static double GetDistance(Position pos1, Position pos2)
