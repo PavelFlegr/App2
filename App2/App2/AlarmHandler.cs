@@ -24,29 +24,22 @@ namespace App2
 
         static async Task CheckNearbyLocation()
         {
-            try
+            var position = GetPosition();
+            var locations = LocationDB.GetLocationList();
+            foreach (Location location in locations)
             {
-                var position = GetPosition();
-                var locations = LocationDB.GetLocationList();
-                foreach (Location location in locations)
+                double distance = DistanceCalculator.Distance(location.Coords, await position);
+                if (location.Timeout && distance > location.Radius + 10)
                 {
-                    double distance = DistanceCalculator.Distance(location.Coords, await position);
-                    if (location.Timeout && distance > location.Radius + 10)
-                    {
-                        location.Timeout = false;
-                    }
-                    if (location.Active && !location.Timeout && distance < location.Radius)
-                    {
-                        NotifyNearby(location);
-                        location.Timeout = true;
-                    }
-
-                    LocationDB.SaveItem(location);
+                    location.Timeout = false;
                 }
-            }
-            catch
-            {
-                return;
+                if (location.Active && !location.Timeout && distance < location.Radius)
+                {
+                    NotifyNearby(location);
+                    location.Timeout = true;
+                }
+
+                LocationDB.SaveItem(location);
             }
             
         }
@@ -54,15 +47,8 @@ namespace App2
         static async Task<Position> GetPosition()
         {
             var locator = CrossGeolocator.Current;
-            try
-            {
-                var pos = await locator.GetPositionAsync();
-                return new Position(pos.Latitude, pos.Longitude);
-            }
-            catch(Exception e)
-            {
-                throw e;
-            }
+            var pos = await locator.GetPositionAsync();
+            return new Position(pos.Latitude, pos.Longitude);
         }
 
         static double GetDistance(Position pos1, Position pos2)

@@ -23,8 +23,6 @@ namespace App2.Android
         {
             base.OnCreate();
             RegisterActivityLifecycleCallbacks(this);
-            var am = (AlarmManager)Context.GetSystemService(AlarmService);
-            am.SetRepeating(AlarmType.ElapsedRealtimeWakeup, SystemClock.ElapsedRealtime(), 1000 * 10, PendingIntent.GetBroadcast(Context, 0, new Intent(Context, new AlarmReciever().Class), 0));
             //A great place to initialize Xamarin.Insights and Dependency Services!
         }
 
