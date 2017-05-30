@@ -10,24 +10,32 @@ using Xamarin.Forms.GoogleMaps;
 using Plugin.Geolocator;
 using SQLite;
 using PCLStorage;
+using PropertyChanged;
 
 namespace App2
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class Map : ContentPage
+    public partial class Map : ContentPage, System.ComponentModel.INotifyPropertyChanged
     {
         Dictionary<Pin, Location> pins = new Dictionary<Pin, Location>();
-        LocationVM currentLoc
+        public LocationVM Current
         {
             get
             {
-                return (LocationVM)BindingContext;
+                return current;
             }
             set
             {
-                BindingContext = value;
+                current = value;
+                if (value != null)
+                {
+                    settings.IsVisible = true;
+                }
+                else settings.IsVisible = false;
+                OnPropertyChanged(nameof(Current));
             }
         }
+        LocationVM current;
         Plugin.Geolocator.Abstractions.IGeolocator locator;
 
         public Map()
@@ -46,8 +54,8 @@ namespace App2
                 var lat = e.Point.Latitude.ToString("0.000");
                 var lng = e.Point.Longitude.ToString("0.000");
                 CreateLocation(double.Parse(lat), double.Parse(lng));
-                map.Circles.Add(currentLoc.MapCircle);
-                map.Pins.Add(currentLoc.MapPin);
+                map.Circles.Add(Current.MapCircle);
+                map.Pins.Add(Current.MapPin);
                 ToggleSettings();
             };
         }
@@ -63,7 +71,7 @@ namespace App2
         async Task InitAsync()
         {
             locator = CrossGeolocator.Current;
-            
+
             try
             {
                 var pos = await locator.GetPositionAsync();
@@ -71,9 +79,31 @@ namespace App2
             }
             catch
             {
-                
+
             }
 
+        }
+
+        LocationVM CreateLocVM(Location loc)
+        {
+            return new LocationVM(loc, OnSave, OnCancel);
+        }
+
+        void OnSave()
+        {
+            pins[Current.MapPin] = Current.Loc;
+            Current = null;
+        }
+
+        void OnCancel()
+        {
+            if (!pins.ContainsKey(Current.MapPin))
+            {
+
+                map.Pins.Remove(Current.MapPin);
+            }
+            map.Circles.Remove(Current.MapCircle);
+            Current = null;
         }
 
         //populates map with saved locations and their pins
@@ -82,7 +112,7 @@ namespace App2
             var locations = LocationDB.GetLocationList();
             foreach (var location in locations)
             {
-                var locVM = new LocationVM(location);
+                var locVM = CreateLocVM(location);
                 pins.Add(locVM.MapPin, location);
                 map.Pins.Add(locVM.MapPin);
             }
@@ -95,58 +125,51 @@ namespace App2
                 Coords = new Position(lat, lng)
             };
 
-            currentLoc = new LocationVM(location);
+            Current = CreateLocVM(location);
 
-        }
-
-        private void Slider_ValueChanged(object sender, ValueChangedEventArgs e)
-        {
-            if (currentLoc != null) {
-                currentLoc.MapCircle.Radius = new Distance(currentLoc.Loc.Radius);
-            }
         }
 
         //hides or shows settings depending on whether they have something to display 
         void ToggleSettings()
         {
             map.InitialCameraUpdate = CameraUpdateFactory.NewCameraPosition(map.CameraPosition);
-            if (currentLoc == null)
+            if (Current == null)
             {
                 settings.IsVisible = false;
             }
             else
             {
                 settings.IsVisible = true;
-                slider.Value = currentLoc.MapCircle.Radius.Meters;
+                slider.Value = Current.MapCircle.Radius.Meters;
             }
         }
 
         private void CancelButton_Clicked(object sender, EventArgs e)
         {
-            if (currentLoc != null)
+            /*if (Current != null)
             {
-                if (!pins.ContainsKey(currentLoc.MapPin))
+                if (!pins.ContainsKey(Current.MapPin))
                 {
 
-                    map.Pins.Remove(currentLoc.MapPin);
+                    map.Pins.Remove(Current.MapPin);
                 }
-                map.Circles.Remove(currentLoc.MapCircle);
-                currentLoc = null;
+                map.Circles.Remove(Current.MapCircle);
+                Current = null;
                 ToggleSettings();
-            }
+            }*/
         }
 
         private void SaveButton_Clicked(object sender, EventArgs e)
         {
-            map.Circles.Remove(currentLoc.MapCircle);
-            currentLoc.Loc.Title = title.Text;
-            currentLoc.MapPin.Label = title.Text;
-            currentLoc.Loc.Description = description.Text;
-            pins[currentLoc.MapPin] = currentLoc.Loc;
-            LocationDB.SaveItem(currentLoc.Loc);
-            currentLoc.Loc.Radius = (int)currentLoc.MapCircle.Radius.Meters;
-            currentLoc = null;
-            ToggleSettings();
+            /*map.Circles.Remove(Current.MapCircle);
+            Current.Loc.Title = title.Text;
+            Current.MapPin.Label = title.Text;
+            Current.Loc.Description = description.Text;
+            pins[Current.MapPin] = Current.Loc;
+            LocationDB.SaveItem(Current.Loc);
+            Current.Loc.Radius = (int)Current.MapCircle.Radius.Meters;
+            Current = null;
+            ToggleSettings();*/
         }
 
         private void Map_PinClicked(object sender, PinClickedEventArgs e)
@@ -156,23 +179,19 @@ namespace App2
 
         void MyPinClicked(Pin pin)
         {
-            CancelButton_Clicked(null, EventArgs.Empty);
-            currentLoc = new LocationVM(pins[pin].ShallowCopy());
-            title.Text = currentLoc.Loc.Title;
-            description.Text = currentLoc.Loc.Description;
-            map.Circles.Add(currentLoc.MapCircle);
-            ToggleSettings();
+            Current = CreateLocVM(pins[pin].ShallowCopy());
+            /*CancelButton_Clicked(null, EventArgs.Empty);
+            Current = new LocationVM(pins[pin].ShallowCopy());
+            title.Text = Current.Loc.Title;
+            description.Text = Current.Loc.Description;
+            map.Circles.Add(Current.MapCircle);
+            ToggleSettings();*/
         }
 
         private void MyLocations_Clicked(object sender, EventArgs e)
         {
             Navigation.InsertPageBefore(new MyLocations(), this);
             Navigation.PopAsync();
-        }
-
-        private void title_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            currentLoc.MapPin.Label = e.NewTextValue;
         }
     }
 }
