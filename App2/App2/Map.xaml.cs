@@ -26,12 +26,16 @@ namespace App2
             }
             set
             {
-                current = value;
                 if (value != null)
                 {
+                    map.Circles.Add(value.MapCircle);
                     settings.IsVisible = true;
                 }
-                else settings.IsVisible = false;
+                else if(current != null)
+                {
+                    settings.IsVisible = false;
+                }
+                current = value;
                 OnPropertyChanged(nameof(Current));
             }
         }
@@ -40,6 +44,7 @@ namespace App2
 
         public Map()
         {
+            BindingContext = this;
             InitializeComponent();
             //conn.DeleteAll<Location>();
             LoadLocations();
@@ -47,23 +52,18 @@ namespace App2
 
             map.PinClicked += Map_PinClicked;
             map.IsShowingUser = true;
-            // Map Clicked
-            map.MapClicked += (sender, e) =>
-            {
-                CancelButton_Clicked(null, EventArgs.Empty);
-                var lat = e.Point.Latitude.ToString("0.000");
-                var lng = e.Point.Longitude.ToString("0.000");
-                CreateLocation(double.Parse(lat), double.Parse(lng));
-                map.Circles.Add(Current.MapCircle);
-                map.Pins.Add(Current.MapPin);
-                ToggleSettings();
-            };
+            map.MapClicked += Map_MapClicked;
+        }
+
+        private void Map_MapClicked(object sender, MapClickedEventArgs e)
+        {
+            Current?.CancelCommand.Execute(null);
+            CreateLocation(e.Point.Latitude, e.Point.Longitude);
         }
 
         public Map(Location loc) : this()
         {
-            MyPinClicked(pins.Where((pair) => pair.Value.Id == loc.Id).First().Key);
-            ToggleSettings();
+            Current = CreateLocVM((pins.Where((pair) => pair.Value.Id == loc.Id).First().Value.ShallowCopy()));
         }
 
         //this needs to be asynchronous because awaititng in the main thread causes a deadlock
@@ -77,10 +77,7 @@ namespace App2
                 var pos = await locator.GetPositionAsync();
                 await map.MoveCamera(CameraUpdateFactory.NewPosition(new Xamarin.Forms.GoogleMaps.Position(pos.Latitude, pos.Longitude)));
             }
-            catch
-            {
-
-            }
+            catch { }
 
         }
 
@@ -92,6 +89,7 @@ namespace App2
         void OnSave()
         {
             pins[Current.MapPin] = Current.Loc;
+            map.Circles.Remove(Current.MapCircle);
             Current = null;
         }
 
@@ -99,12 +97,12 @@ namespace App2
         {
             if (!pins.ContainsKey(Current.MapPin))
             {
-
                 map.Pins.Remove(Current.MapPin);
             }
             map.Circles.Remove(Current.MapCircle);
             Current = null;
         }
+
 
         //populates map with saved locations and their pins
         void LoadLocations()
@@ -124,68 +122,14 @@ namespace App2
             {
                 Coords = new Position(lat, lng)
             };
-
+            
             Current = CreateLocVM(location);
-
-        }
-
-        //hides or shows settings depending on whether they have something to display 
-        void ToggleSettings()
-        {
-            map.InitialCameraUpdate = CameraUpdateFactory.NewCameraPosition(map.CameraPosition);
-            if (Current == null)
-            {
-                settings.IsVisible = false;
-            }
-            else
-            {
-                settings.IsVisible = true;
-                slider.Value = Current.MapCircle.Radius.Meters;
-            }
-        }
-
-        private void CancelButton_Clicked(object sender, EventArgs e)
-        {
-            /*if (Current != null)
-            {
-                if (!pins.ContainsKey(Current.MapPin))
-                {
-
-                    map.Pins.Remove(Current.MapPin);
-                }
-                map.Circles.Remove(Current.MapCircle);
-                Current = null;
-                ToggleSettings();
-            }*/
-        }
-
-        private void SaveButton_Clicked(object sender, EventArgs e)
-        {
-            /*map.Circles.Remove(Current.MapCircle);
-            Current.Loc.Title = title.Text;
-            Current.MapPin.Label = title.Text;
-            Current.Loc.Description = description.Text;
-            pins[Current.MapPin] = Current.Loc;
-            LocationDB.SaveItem(Current.Loc);
-            Current.Loc.Radius = (int)Current.MapCircle.Radius.Meters;
-            Current = null;
-            ToggleSettings();*/
+            map.Pins.Add(Current.MapPin);
         }
 
         private void Map_PinClicked(object sender, PinClickedEventArgs e)
         {
-            MyPinClicked(e.Pin);
-        }
-
-        void MyPinClicked(Pin pin)
-        {
-            Current = CreateLocVM(pins[pin].ShallowCopy());
-            /*CancelButton_Clicked(null, EventArgs.Empty);
-            Current = new LocationVM(pins[pin].ShallowCopy());
-            title.Text = Current.Loc.Title;
-            description.Text = Current.Loc.Description;
-            map.Circles.Add(Current.MapCircle);
-            ToggleSettings();*/
+            Current = CreateLocVM(pins[e.Pin].ShallowCopy());
         }
 
         private void MyLocations_Clicked(object sender, EventArgs e)

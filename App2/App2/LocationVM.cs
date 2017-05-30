@@ -21,7 +21,7 @@ namespace App2
             set
             {
                 Loc.Title = value;
-                MapPin.Label = value;
+                //apparently, changing the pins label changes its pointer thus messing up my pin dictinary. so i'm just leaving it as location
             }
         }
 
@@ -36,7 +36,7 @@ namespace App2
                 Loc.Description = value;
             }
         }
-        
+
         public double Radius
         {
             get
@@ -63,7 +63,7 @@ namespace App2
             SaveCommand = new Command(Save);
             CancelCommand = new Command(Cancel);
             Loc = loc;
-            MapPin = new Pin { Label = "new location", Position = new Xamarin.Forms.GoogleMaps.Position(loc.Coords.Latitude, loc.Coords.Longitude) };
+            MapPin = new Pin { Label = "location", Position = new Xamarin.Forms.GoogleMaps.Position(loc.Coords.Latitude, loc.Coords.Longitude) };
             MapCircle = new Circle { Center = new Xamarin.Forms.GoogleMaps.Position(loc.Coords.Latitude, loc.Coords.Longitude), FillColor = Color.Transparent, StrokeColor = Color.LightBlue, StrokeWidth = 3, Radius = new Distance(Loc.Radius) };
         }
 
@@ -77,7 +77,7 @@ namespace App2
 
         void Cancel()
         {
-            saveCB?.Invoke();
+            cancelCB?.Invoke();
         }
 
         void RaisePropertyChanged(string name)
