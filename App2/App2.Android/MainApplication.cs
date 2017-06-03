@@ -7,6 +7,7 @@ using Plugin.CurrentActivity;
 using Android.Content;
 using Android.Content.PM;
 using System.Reflection;
+using App2;
 
 namespace App2.Android
 {

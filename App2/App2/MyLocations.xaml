@@ -2,13 +2,14 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="App2.MyLocations">
-    <ListView x:Name="locations" ItemTapped="locations_ItemTapped">
+    <ListView x:Name="locations">
         <ListView.ItemTemplate>
             <DataTemplate>
                 <ViewCell>
                     <StackLayout Orientation="Horizontal">
                         <Label Text="{Binding location.Title}"></Label>
                         <Button Command="{Binding DeleteCommand}" Text="Delete"></Button>
+                        <Button Command="{Binding EditCommand}" Text="Edit"></Button>
                         <Label Text="Active"></Label>
                         <Switch IsToggled="{Binding Active}"></Switch>
                     </StackLayout>

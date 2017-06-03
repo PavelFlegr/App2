@@ -30,9 +30,14 @@ namespace App2
             }
         }
 
-        public static List<Location> GetLocationList()
+        public static Location GetLocation(int id)
         {
-            return conn.Table<Location>().ToList();
+            return conn.Get<Location>(id);
+        }
+
+        public static IEnumerable<Location> GetLocations()
+        {
+            return conn.Table<Location>().AsEnumerable();
         }
 
         public static int DeleteItem(Location item)

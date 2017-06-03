@@ -13,7 +13,7 @@ namespace App2
         {
             InitializeComponent();
             Page page;
-            if (LocationDB.GetLocationList().Count > 0)
+            if (LocationDB.GetLocations().Count > 0)
             {
                 page = new App2.MyLocations();
             }

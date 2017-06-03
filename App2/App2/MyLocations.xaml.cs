@@ -15,7 +15,7 @@ namespace App2
     {
         public MyLocations()
         {
-            
+
             InitializeComponent();
             LoadLocations();
         }
@@ -23,9 +23,10 @@ namespace App2
         void LoadLocations()
         {
             var locList = new ObservableCollection<LocationListItemVM>();
-            foreach(Location loc in LocationDB.GetLocationList())
+            foreach (Location loc in LocationDB.GetLocations())
             {
                 LocationListItemVM locVM = new LocationListItemVM(loc);
+                locVM.Edit += (o, e) => EditLocation(((LocationListItemVM)o).location);
                 locList.Add(locVM);
                 locVM.Removed += (o, e) => locList.Remove(locVM);
             }
@@ -38,9 +39,9 @@ namespace App2
             Navigation.PopAsync();
         }
 
-        private void locations_ItemTapped(object sender, ItemTappedEventArgs e)
+        void EditLocation(Location location)
         {
-            Navigation.InsertPageBefore(new Map(((LocationListItemVM)e.Item).location), this);
+            Navigation.InsertPageBefore(new Map(location), this);
             Navigation.PopAsync();
         }
     }

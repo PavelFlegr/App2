@@ -15,13 +15,20 @@ namespace App2.Android
 {
     [BroadcastReceiver]
     [IntentFilter(new string[] { Intent.ActionBootCompleted })]
-    public class BootReciever : BroadcastReceiver
+    public class BootReceiver : BroadcastReceiver
     {
         public override void OnReceive(Context context, Intent intent)
         {
-            var am = (AlarmManager)context.GetSystemService(Context.AlarmService);
-            am.SetRepeating(AlarmType.ElapsedRealtimeWakeup, SystemClock.ElapsedRealtime(), 1000 * 10, PendingIntent.GetBroadcast(context, 0, new Intent(context, new AlarmReciever().Class), 0));
-            CrossLocalNotifications.Current.Show("test", "test");
+            AddAllLocations();
+        }
+
+        void AddAllLocations()
+        {
+            var setup = new GeofenceSetup();
+            foreach(Location location in LocationDB.GetLocations().Where(l => l.Active))
+            {
+                setup.Monitor(location);
+            }
         }
     }
 }

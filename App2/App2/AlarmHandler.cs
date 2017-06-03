@@ -25,7 +25,7 @@ namespace App2
         static async Task CheckNearbyLocation()
         {
             var position = GetPosition();
-            var locations = LocationDB.GetLocationList();
+            var locations = LocationDB.GetLocations();
             foreach (Location location in locations)
             {
                 double distance = DistanceCalculator.Distance(location.Coords, await position);

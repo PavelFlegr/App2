@@ -7,6 +7,9 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
+using Android.Gms.Location;
+using Android.Gms.Common.Apis;
+
 
 namespace App2.Android
 {
@@ -19,19 +22,13 @@ namespace App2.Android
             ToolbarResource = Resource.Layout.Toolbar;
 
             base.OnCreate(bundle);
-            var prefs = GetPreferences(FileCreationMode.Private);
-            if(!prefs.GetBoolean("firstRun", true)) {
-                var am = (AlarmManager)GetSystemService(AlarmService);
-                am.SetRepeating(AlarmType.ElapsedRealtimeWakeup, SystemClock.ElapsedRealtime(), 1000 * 60, PendingIntent.GetBroadcast(ApplicationContext, 0, new Intent(ApplicationContext, new AlarmReciever().Class), 0));
-
-                var pEdit = prefs.Edit();
-                pEdit.PutBoolean("firstRun", false);
-                pEdit.Commit();
-            }
+            var test = new GeofenceSetup();
             global::Xamarin.Forms.Forms.Init(this, bundle);
             Xamarin.FormsGoogleMaps.Init(this, bundle);
             LoadApplication(new App());
         }
+
+        
     }
 }
 

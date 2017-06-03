@@ -18,6 +18,26 @@ namespace App2
     public partial class Map : ContentPage, System.ComponentModel.INotifyPropertyChanged
     {
         Dictionary<Pin, Location> pins = new Dictionary<Pin, Location>();
+
+        public double VisibleRadius
+        {
+            get
+            {
+                if (radiusChanged == true)
+                {
+                    return map.VisibleRegion != null ? map.VisibleRegion.Radius.Meters : 1;
+                }
+                else
+                {
+                    return lastVisibleRadius > 0 ? lastVisibleRadius : 1; 
+                }
+            }
+        }
+
+        double lastVisibleRadius;
+
+        bool radiusChanged;
+
         public LocationVM Current
         {
             get
@@ -26,6 +46,8 @@ namespace App2
             }
             set
             {
+                //camera jumps to initial position when map is resized
+                map.InitialCameraUpdate = CameraUpdateFactory.NewCameraPosition(map.CameraPosition);
                 if (value != null)
                 {
                     map.Circles.Add(value.MapCircle);
@@ -35,6 +57,7 @@ namespace App2
                 {
                     settings.IsVisible = false;
                 }
+                radiusChanged = false;
                 current = value;
                 OnPropertyChanged(nameof(Current));
             }
@@ -46,13 +69,26 @@ namespace App2
         {
             BindingContext = this;
             InitializeComponent();
-            //conn.DeleteAll<Location>();
-            LoadLocations();
             InitAsync();
+            LoadLocations();
 
             map.PinClicked += Map_PinClicked;
             map.IsShowingUser = true;
             map.MapClicked += Map_MapClicked;
+            map.CameraChanged += Map_CameraChanged;
+        }
+
+        private void Map_CameraChanged(object sender, CameraChangedEventArgs e)
+        {
+            if(Current != null && map.VisibleRegion.Radius.Meters < Current.Radius)
+            {
+                lastVisibleRadius = Current.Radius;
+                radiusChanged = false;
+            }
+            else
+            {
+                radiusChanged = true;
+            }
         }
 
         private void Map_MapClicked(object sender, MapClickedEventArgs e)
@@ -107,7 +143,7 @@ namespace App2
         //populates map with saved locations and their pins
         void LoadLocations()
         {
-            var locations = LocationDB.GetLocationList();
+            var locations = LocationDB.GetLocations();
             foreach (var location in locations)
             {
                 var locVM = CreateLocVM(location);
@@ -122,13 +158,13 @@ namespace App2
             {
                 Coords = new Position(lat, lng)
             };
-            
             Current = CreateLocVM(location);
             map.Pins.Add(Current.MapPin);
         }
 
         private void Map_PinClicked(object sender, PinClickedEventArgs e)
         {
+            Current?.CancelCommand.Execute(null);
             Current = CreateLocVM(pins[e.Pin].ShallowCopy());
         }
 
@@ -136,6 +172,12 @@ namespace App2
         {
             Navigation.InsertPageBefore(new MyLocations(), this);
             Navigation.PopAsync();
+        }
+
+        private void slider_ValueChanged(object sender, ValueChangedEventArgs e)
+        {
+            radiusChanged = true;
+            OnPropertyChanged(nameof(VisibleRadius));
         }
     }
 }

@@ -49,6 +49,7 @@ namespace App2
                 MapCircle.Radius = new Distance(value);
             }
         }
+
         public Pin MapPin { get; set; }
         public Circle MapCircle { get; set; }
         public Command SaveCommand { get; }
@@ -72,6 +73,7 @@ namespace App2
         void Save()
         {
             LocationDB.SaveItem(Loc);
+            GeofenceSetup.Monitor(Loc);
             saveCB?.Invoke();
         }
 
@@ -80,7 +82,7 @@ namespace App2
             cancelCB?.Invoke();
         }
 
-        void RaisePropertyChanged(string name)
+        public void RaisePropertyChanged(string name)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }

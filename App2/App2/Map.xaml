@@ -2,9 +2,10 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="clr-namespace:Xamarin.Forms.GoogleMaps;assembly=Xamarin.Forms.GoogleMaps"
-             x:Class="App2.Map">
+             x:Class="App2.Map"
+             x:Name="page">
     <StackLayout VerticalOptions="Fill">
-        <maps:Map IsShowingUser="True" x:Name="map"></maps:Map>
+        <maps:Map IsShowingUser="True" x:Name="map" InitialCameraUpdate="{Binding InitialCameraUpdate}"></maps:Map>
         <ScrollView x:Name="settings" HeightRequest="200" Padding="20,0" IsVisible="False">
             <Grid BindingContext="{Binding Current}" HorizontalOptions="Fill">
                 <Grid.ColumnDefinitions>
@@ -18,7 +19,7 @@
                 </Grid.RowDefinitions>
                 <Entry x:Name="title" WidthRequest="200" HorizontalOptions="Center" Grid.ColumnSpan="2" Grid.Row="0" Placeholder="Title" Text="{Binding Title}"></Entry>
                 <Label Grid.Column="0" Grid.Row="1">Radius</Label>
-                <Slider x:Name="slider" Grid.Column="1" Grid.Row="1" Minimum="0" Maximum="10000" Value="{Binding Radius}"></Slider>
+                <Slider x:Name="slider" ValueChanged="slider_ValueChanged" Grid.Column="1" Grid.Row="1" Minimum="0" Maximum="{Binding Source={x:Reference page}, Path=VisibleRadius}" Value="{Binding Radius}"></Slider>
                 <Entry x:Name="description" Grid.ColumnSpan="2" Grid.Row="2" Text="{Binding Description}" Placeholder="Description"></Entry>
                 <Button Text="Cancel" Grid.Row="3" Command="{Binding CancelCommand}"></Button>
                 <Button Text="Save" Grid.Row="3" Grid.Column="1" HorizontalOptions="End" Command="{Binding SaveCommand}"></Button>

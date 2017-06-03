@@ -11,6 +11,7 @@ namespace App2
     {
         public Location location { get; set; }
         public Command DeleteCommand { get; set; }
+        public Command EditCommand { get; set; }
         public bool Active
         {
             get
@@ -19,6 +20,14 @@ namespace App2
             }
             set
             {
+                if (value)
+                {
+                    GeofenceSetup.Monitor(location);
+                }
+                else
+                {
+                    GeofenceSetup.RemoveMonitor(location);
+                }
                 location.Active = value;
                 LocationDB.SaveItem(location);
             }
@@ -27,9 +36,10 @@ namespace App2
         {
             this.location = location;
             DeleteCommand = new Command(() => {
+                GeofenceSetup.RemoveMonitor(location);
                 LocationDB.DeleteItem(location);
                 RaiseRemoved();
-                }
+            }
             );
         }
 
@@ -38,6 +48,13 @@ namespace App2
         void RaiseRemoved()
         {
             Removed?.Invoke(this, EventArgs.Empty);
+        }
+
+        public EventHandler Edit;
+
+        void RaiseEdit()
+        {
+            Edit?.Invoke(this, EventArgs.Empty);
         }
     }
 }

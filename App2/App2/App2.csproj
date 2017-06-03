@@ -40,6 +40,8 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="DistanceCalculator.cs" />
+    <Compile Include="GeofenceSetup.cs" />
+    <Compile Include="IGeofenceSetup.cs" />
     <Compile Include="Location.cs" />
     <Compile Include="LocationDB.cs" />
     <Compile Include="LocationListItemVM.cs" />
