@@ -25,11 +25,11 @@ namespace App2
             {
                 if (radiusChanged == true)
                 {
-                    return map.VisibleRegion != null ? map.VisibleRegion.Radius.Meters : 1;
+                    return map.VisibleRegion != null ? map.VisibleRegion.Radius.Meters : 2;
                 }
                 else
                 {
-                    return lastVisibleRadius > 0 ? lastVisibleRadius : 1; 
+                    return lastVisibleRadius > 1 ? lastVisibleRadius : 2; 
                 }
             }
         }
@@ -80,14 +80,9 @@ namespace App2
 
         private void Map_CameraChanged(object sender, CameraChangedEventArgs e)
         {
-            if(Current != null && map.VisibleRegion.Radius.Meters < Current.Radius)
+            if(map.VisibleRegion.Radius.Meters > slider.Maximum)
             {
-                lastVisibleRadius = Current.Radius;
-                radiusChanged = false;
-            }
-            else
-            {
-                radiusChanged = true;
+                slider.Maximum = map.VisibleRegion.Radius.Meters;
             }
         }
 
@@ -156,9 +151,12 @@ namespace App2
         {
             var location = new Location
             {
-                Coords = new Position(lat, lng)
+                Coords = new Position(lat, lng),
+                Radius = map.VisibleRegion.Radius.Meters
             };
             Current = CreateLocVM(location);
+            slider.Maximum = slider.Value = Current.Radius;
+            slider.Minimum = 1;
             map.Pins.Add(Current.MapPin);
         }
 
@@ -166,6 +164,9 @@ namespace App2
         {
             Current?.CancelCommand.Execute(null);
             Current = CreateLocVM(pins[e.Pin].ShallowCopy());
+            slider.Maximum = Math.Max(map.VisibleRegion.Radius.Meters, Current.Radius);
+            slider.Value = Current.Radius;
+            slider.Minimum = 1;
         }
 
         private void MyLocations_Clicked(object sender, EventArgs e)
@@ -176,8 +177,15 @@ namespace App2
 
         private void slider_ValueChanged(object sender, ValueChangedEventArgs e)
         {
-            radiusChanged = true;
-            OnPropertyChanged(nameof(VisibleRadius));
+            if(slider.Maximum > map.VisibleRegion.Radius.Meters)
+            {
+                if(slider.Value > map.VisibleRegion.Radius.Meters)
+                {
+                    slider.Value = map.VisibleRegion.Radius.Meters;
+                }
+                slider.Maximum = map.VisibleRegion.Radius.Meters;
+            }
+            Current.Radius = slider.Value;
         }
     }
 }

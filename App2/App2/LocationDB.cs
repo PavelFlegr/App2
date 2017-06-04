@@ -35,9 +35,9 @@ namespace App2
             return conn.Get<Location>(id);
         }
 
-        public static IEnumerable<Location> GetLocations()
+        public static List<Location> GetLocations()
         {
-            return conn.Table<Location>().AsEnumerable();
+            return conn.Table<Location>().ToList();
         }
 
         public static int DeleteItem(Location item)

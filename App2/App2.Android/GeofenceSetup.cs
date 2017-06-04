@@ -16,10 +16,9 @@ using Android.Gms.Common;
 [assembly: Xamarin.Forms.Dependency(typeof(App2.Android.GeofenceSetup))]
 namespace App2.Android
 {
-    class GeofenceSetup : IGeofenceSetup
+    class GeofenceSetup : Java.Lang.Object, IGeofenceSetup, GoogleApiClient.IConnectionCallbacks, GoogleApiClient.IOnConnectionFailedListener
     {
         static GoogleApiClient client;
-
         static GeofenceSetup()
         {
             client = BuildApiClient();
@@ -31,7 +30,7 @@ namespace App2.Android
             .SetRequestId(location.Id.ToString())
             .SetCircularRegion(location.lat, location.lon, (float)location.Radius)
             .SetTransitionTypes(Geofence.GeofenceTransitionEnter)
-            .SetExpirationDuration(1000)
+            .SetExpirationDuration(Geofence.NeverExpire)
             .Build();
 
             var request = new GeofencingRequest.Builder()
@@ -52,6 +51,21 @@ namespace App2.Android
         public void RemoveMonitor(Location location)
         {
             LocationServices.GeofencingApi.RemoveGeofences(client, new List<string> { location.Id.ToString()});
+        }
+
+        public void OnConnected(Bundle connectionHint)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnConnectionSuspended(int cause)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnConnectionFailed(ConnectionResult result)
+        {
+            throw new NotImplementedException();
         }
     }
 }

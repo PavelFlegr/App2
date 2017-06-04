@@ -20,14 +20,6 @@ namespace App2
             }
             set
             {
-                if (value)
-                {
-                    GeofenceSetup.Monitor(location);
-                }
-                else
-                {
-                    GeofenceSetup.RemoveMonitor(location);
-                }
                 location.Active = value;
                 LocationDB.SaveItem(location);
             }
@@ -41,6 +33,10 @@ namespace App2
                 RaiseRemoved();
             }
             );
+            EditCommand = new Command(() =>
+            {
+                RaiseEdit();
+            });
         }
 
         public event EventHandler Removed;

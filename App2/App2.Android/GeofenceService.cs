@@ -26,8 +26,11 @@ namespace App2.Android
                 foreach (var geofence in gEvent.TriggeringGeofences)
                 {
                     var location = LocationDB.GetLocation(int.Parse(geofence.RequestId));
-                    CrossLocalNotifications.Current.Show(location.Title, location.Description);
-                    CrossVibrate.Current.Vibration();
+                    if (location.Active)
+                    {
+                        CrossLocalNotifications.Current.Show(location.Title, location.Description);
+                        CrossVibrate.Current.Vibration();
+                    }
                 }
             }
         }

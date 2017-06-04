@@ -35,11 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AlarmHandler.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DistanceCalculator.cs" />
     <Compile Include="GeofenceSetup.cs" />
     <Compile Include="IGeofenceSetup.cs" />
     <Compile Include="Location.cs" />
