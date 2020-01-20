@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using Xamarin.Forms;
+using SQLite;
 
 namespace App2
 {
@@ -13,6 +14,7 @@ namespace App2
         {
             InitializeComponent();
             Page page;
+            LocationDB.Init();
             if (LocationDB.GetLocations().Count > 0)
             {
                 page = new App2.MyLocations();

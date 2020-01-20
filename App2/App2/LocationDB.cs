@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SQLite;
-using PCLStorage;
+using System.IO;
 
 namespace App2
 {
@@ -12,9 +12,9 @@ namespace App2
     {
         static SQLiteConnection conn;
 
-        static LocationDB()
+        public static void Init()
         {
-            conn = new SQLiteConnection(FileSystem.Current.LocalStorage.Path + "/db");
+            conn = new SQLiteConnection(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/db");
             conn.CreateTable<Location>();
         }
 

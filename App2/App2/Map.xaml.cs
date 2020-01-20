@@ -9,7 +9,6 @@ using Xamarin.Forms.Xaml;
 using Xamarin.Forms.GoogleMaps;
 using Plugin.Geolocator;
 using SQLite;
-using PCLStorage;
 using PropertyChanged;
 
 namespace App2
@@ -19,22 +18,6 @@ namespace App2
     {
         Dictionary<Pin, Location> pins = new Dictionary<Pin, Location>();
 
-        public double VisibleRadius
-        {
-            get
-            {
-                if (radiusChanged == true)
-                {
-                    return map.VisibleRegion != null ? map.VisibleRegion.Radius.Meters : 2;
-                }
-                else
-                {
-                    return lastVisibleRadius > 1 ? lastVisibleRadius : 2; 
-                }
-            }
-        }
-
-        double lastVisibleRadius;
 
         bool radiusChanged;
 
@@ -73,12 +56,13 @@ namespace App2
             LoadLocations();
 
             map.PinClicked += Map_PinClicked;
-            map.IsShowingUser = true;
+            map.MyLocationEnabled = true;
+            map.UiSettings.MyLocationButtonEnabled = true;
             map.MapClicked += Map_MapClicked;
-            map.CameraChanged += Map_CameraChanged;
+            map.CameraIdled += Map_CameraChanged;
         }
 
-        private void Map_CameraChanged(object sender, CameraChangedEventArgs e)
+        private void Map_CameraChanged(object sender, CameraIdledEventArgs e)
         {
             if(map.VisibleRegion.Radius.Meters > slider.Maximum)
             {

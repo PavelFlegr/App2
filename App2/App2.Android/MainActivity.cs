@@ -9,7 +9,9 @@ using Android.Widget;
 using Android.OS;
 using Android.Gms.Location;
 using Android.Gms.Common.Apis;
-
+using Plugin.Permissions;
+using Plugin.Geolocator;
+using Plugin.CurrentActivity;
 
 namespace App2.Android
 {
@@ -20,7 +22,6 @@ namespace App2.Android
         {
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
-
             base.OnCreate(bundle);
             var test = new GeofenceSetup();
             global::Xamarin.Forms.Forms.Init(this, bundle);
@@ -28,7 +29,13 @@ namespace App2.Android
             LoadApplication(new App());
         }
 
-        
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
+        {
+            PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+
+
     }
 }
 
